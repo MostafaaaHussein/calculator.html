@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comma Separated Calculator</title>
+    <style>
+        body {
+            font-family: Arial;
+            margin: 20px;
+            background-color: #f0f0f0;
+        }
+
+        .calculator-container {
+            max-width: 400px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        textarea {
+            width: 100%;
+            margin: 10px 0;
+            padding: 10px;
+            border: 1px solid #ccc;
+        }
+
+        #inputBox {
+            height: 80px;
+        }
+
+        #resultBox {
+            height: 40px;
+            background-color: #f8f8f8;
+        }
+
+        .number-pad {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 5px;
+            margin-bottom: 10px;
+        }
+
+        .operation-buttons {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 5px;
+        }
+
+        .btn {
+            padding: 10px;
+            border: 1px solid #ccc;
+            background-color: #fff;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            background-color: #eee;
+        }
+
+        .operation {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+        }
+
+        .operation:hover {
+            background-color: #45a049;
+        }
+
+        .clear {
+            background-color: #f44336;
+            color: white;
+            border: none;
+            grid-column: span 2;
+        }
+
+        .clear:hover {
+            background-color: #da190b;
+        }
+    </style>
+</head>
+<body>
+    <div class="calculator-container">
+        <h1>Comma Separated Calculator</h1>
+        
+        <div class="input-section">
+            <textarea id="inputBox" placeholder="Enter comma-separated numbers..."></textarea>
+        </div>
+
+        <div class="result-section">
+            <textarea id="resultBox" readonly></textarea>
+        </div>
+
+        <div class="buttons-container">
+            <div class="number-pad">
+                <button class="btn" onclick="addToInput('7')">7</button>
+                <button class="btn" onclick="addToInput('8')">8</button>
+                <button class="btn" onclick="addToInput('9')">9</button>
+                <button class="btn" onclick="addToInput('4')">4</button>
+                <button class="btn" onclick="addToInput('5')">5</button>
+                <button class="btn" onclick="addToInput('6')">6</button>
+                <button class="btn" onclick="addToInput('1')">1</button>
+                <button class="btn" onclick="addToInput('2')">2</button>
+                <button class="btn" onclick="addToInput('3')">3</button>
+                <button class="btn" onclick="addToInput('0')">0</button>
+                <button class="btn" onclick="addToInput('.')">.</button>
+                <button class="btn" onclick="addToInput(',')">,</button>
+            </div>
+
+            <div class="operation-buttons">
+                <button class="btn operation" onclick="calculateSum()">Sum</button>
+                <button class="btn operation" onclick="calculateAvg()">Avg</button>
+                <button class="btn operation" onclick="calculateStd()">Std</button>
+                <button class="btn clear" onclick="clearInput()">Clear</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function addToInput(value) {
+            document.getElementById('inputBox').value += value;
+        }
+
+        function clearInput() {
+            document.getElementById('inputBox').value = '';
+            document.getElementById('resultBox').value = '';
+        }
+
+        function getNumbers() {
+            const input = document.getElementById('inputBox').value.trim();
+            if (!input) return [];
+            
+            try {
+                return input.split(',')
+                    .map(x => x.trim())
+                    .filter(x => x)
+                    .map(x => parseFloat(x));
+            } catch (error) {
+                return [];
+            }
+        }
+
+        function displayResult(result) {
+            document.getElementById('resultBox').value = result;
+        }
+
+        function calculateSum() {
+            const numbers = getNumbers();
+            if (numbers.length > 0) {
+                const sum = numbers.reduce((a, b) => a + b, 0);
+                displayResult(`Sum: ${sum.toFixed(2)}`);
+            }
+        }
+
+        function calculateAvg() {
+            const numbers = getNumbers();
+            if (numbers.length > 0) {
+                const avg = numbers.reduce((a, b) => a + b, 0) / numbers.length;
+                displayResult(`Average: ${avg.toFixed(2)}`);
+            }
+        }
+
+        function calculateStd() {
+            const numbers = getNumbers();
+            if (numbers.length > 1) {
+                const mean = numbers.reduce((a, b) => a + b, 0) / numbers.length;
+                const squareDiffs = numbers.map(value => {
+                    const diff = value - mean;
+                    return diff * diff;
+                });
+                const avgSquareDiff = squareDiffs.reduce((a, b) => a + b, 0) / squareDiffs.length;
+                const std = Math.sqrt(avgSquareDiff);
+                displayResult(`Standard Deviation: ${std.toFixed(2)}`);
+            } else if (numbers.length === 1) {
+                displayResult('Standard Deviation: 0.00 (only one number)');
+            }
+        }
+    </script>
+</body>
+</html> 
